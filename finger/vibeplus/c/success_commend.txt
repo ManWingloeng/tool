@@ -1,0 +1,5 @@
+g++ -shared -fpic ViBePlus.cpp $(pkg-config --cflags --libs python3) $(pkg-config --cflags --libs opencv) -std=c++11 -o pro_libvibeplus.so
+g++ -c -fPIC ViBePlus.cpp -o ViBePlus.o
+
+g++  ViBePlus.cpp main.cpp $(pkg-config --cflags --libs python3) $(pkg-config --cflags --libs opencv) -std=c++11 -o main.o
+
