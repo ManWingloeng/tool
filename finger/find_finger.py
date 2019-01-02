@@ -3,17 +3,23 @@
 # @Author  : ManWingloeng
 
 
-# from imutils.video.webcamvideostream import WebcamVideoStream
-import numpy as np
-import imutils
 import cv2
 import matplotlib.pyplot as plt
+# from imutils.video.webcamvideostream import WebcamVideoStream
+import numpy as np
+import YCbCr_v2
+import imutils
 
 
 # frame_read = cv2.imread("/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/data/all_nail/test/01.jpg")
 
 
 # frame=cv2.blur(frame,(11,11))
+
+def test(frame):
+    imgSkin = YCbCr_v2.convertYCbCr2(frame)
+    cv2.imshow("imgSkin",imgSkin)
+
 
 def find_hand(frame):
     # frame = imutils.resize(frame, width=500, height=500)
@@ -24,6 +30,7 @@ def find_hand(frame):
     YCrCb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2YCrCb)
     YCrCb_frame = cv2.GaussianBlur(YCrCb_frame, (9, 9), 0)
     YCrCb_frame = cv2.GaussianBlur(YCrCb_frame, (3, 3), 0)
+    YCrCb_frame = cv2.GaussianBlur(YCrCb_frame, (1, 1), 0)
     cv2.imshow("YCrCb_frame", YCrCb_frame)
     print(frame.shape[:2])
     # mask = cv2.inRange(YCrCb_frame, np.array([0, 135, 97]), np.array([255, 177, 127]))#140 170 100 120
@@ -92,21 +99,28 @@ def find_hand(frame):
     # img[markers == -1] = [255, 0, 0]
     # cv2.imshow("water_img", img)q
 
-    _, contours, _ = cv2.findContours(bin_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    cmax = max(contours, key=cv2.contourArea)
+    _ , contours, _ = cv2.findContours(bin_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    # print("ret:",ret)
+    # print(contours)
 
-    # epsilon = 0.000001*cv2.arcLength(cmax,True)
-    # cmax = cv2.approxPolyDP(cmax,epsilon,True)
-    cv2.drawContours(frame, [cmax], 0, (55, 55, 251), 1)  # red
-    cv2.drawContours(img, [cmax], 0, (55, 55, 251), 1)  # red
+    if len(contours)>0:
+        cmax = max(contours, key=cv2.contourArea)
+        # epsilon = 0.000001*cv2.arcLength(cmax,True)
+        # cmax = cv2.approxPolyDP(cmax,epsilon,True)
+        cv2.drawContours(frame, [cmax], 0, (55, 55, 251), 1)  # red
+        cv2.drawContours(img, [cmax], 0, (55, 55, 251), 1)  # red
+    else:
+        cmax=[]
     return img, bin_mask, res, cmax
 
 
 def gravity(image, gray, contours):
     # print("countours 0",contours)
+    if len(contours)<=0:
+        return -1
     only_hand = np.zeros(shape=gray.shape)
     # save_zeros = save_zeros.astype(np.int32)
-    cv2.drawContours(only_hand, [contours], 0, 255, cv2.FILLED)
+    # cv2.drawContours(only_hand, [contours], 0, 255, cv2.FILLED)
     #     cv2.imshow("only_hand", only_hand)
     moments = cv2.moments(contours)
     m00 = moments['m00']
@@ -117,10 +131,12 @@ def gravity(image, gray, contours):
         c_y = int(moments['m01'] / m00)  # Take Y coordinate
     print("c_x: {},c_y: {}".format(c_x, c_y))
     ctr = (-1, -1)
-    if c_x != None and c_y != None:
-        ctr = (c_x, c_y)
-        # Put black circle in at centroid in image
-        cv2.circle(image, ctr, 5, (255, 255, 255), -1)
+    if c_x == None or c_y == None:
+        return -1
+    # if c_x != None and c_y != None:
+    ctr = (c_x, c_y)
+    # Put black circle in at centroid in image
+    cv2.circle(image, ctr, 5, (255, 255, 255), -1)
     index = 0
     cnt = 0
     dis_sum = 0.
@@ -152,7 +168,9 @@ def gravity(image, gray, contours):
 
     mx = 0.
     update = False
-    angel = Curvature(contours, 20)
+    angel = Curvature(contours, 5)
+    if angel ==-1:
+        return -1
     print("cosPI/6:", np.cos(np.pi / 6))
     for i, h in enumerate(distances_smooth):
 
@@ -174,6 +192,7 @@ def gravity(image, gray, contours):
                 # if distances_smooth[index] >= finger_dis:
 
                 # acos math domain
+                
                 if -1 <= angel[index] <= 1:
                     if distances_smooth[index] >= finger_dis and 20 < 180 * math.acos(angel[index]) / math.pi < 90:
                         cnt = 0
@@ -189,8 +208,8 @@ def gravity(image, gray, contours):
     # plt.show()
     # plt.bar(np.arange(len(distances_smooth)), distances_smooth)
     # plt.show()
-    print("finger_Candidate", finger_Candidate)
-    print("distances", distances)
+    # print("finger_Candidate", finger_Candidate)
+    # print("distances", distances)
 
     # cv2.imshow("gravity", image)
 
@@ -275,20 +294,25 @@ def derived_gravity(image, gray, contours):
 
 
 def Curvature(contours, step):
-    size_of_contours = len(contours)
     L_of_contours = len(contours)
+    print("L_of_contours",L_of_contours)
     angel = [-1] * L_of_contours
+    if L_of_contours < step or L_of_contours <= 0:
+        return -1
     for id, point in enumerate(contours):
+        print("id+step:",id+step)
+        print("id - step",id - step)
+        p = point[0]
         if id < step and id + step < L_of_contours:
-            p = point[0]
             p_pre = contours[L_of_contours - step][0]
             p_nxt = contours[id + step][0]
-        if id + step >= size_of_contours:
-            p = point[0]
+        elif id + step >= L_of_contours and id - step >= 0:
             p_pre = contours[id - step][0]
             p_nxt = contours[id + step - L_of_contours][0]
+        elif id + step >=L_of_contours and id - step < 0:
+            p_pre = contours[L_of_contours - step][0]
+            p_nxt = contours[id + step - L_of_contours][0]
         else:
-            p = point[0]
             p_pre = contours[id - step][0]
             p_nxt = contours[id + step][0]
         p2p_pre = p - p_pre
