@@ -51,9 +51,16 @@ while_cnt = 0
 
 
 
-web=WebcamVideoStream(src=0)
+web = WebcamVideoStream(src=0)
 web.start()
 
+kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(3,3))
+# fgbg = cv2.bgsegm.createBackgroundSubtractorGMG()
+# fgbg_old = cv2.bgsegm.createBackgroundSubtractorGMG()
+# fgbg.setDecisionThreshold(40)
+# fgbg = cv2.bgsegm.createBackgroundSubtractorMOG()
+# fgbg = cv2.createBackgroundSubtractorMOG2()
+fgbg2 = cv2.createBackgroundSubtractorMOG2(history=500, varThreshold=40, detectShadows=False)
 if web.stream.isOpened():
     while True:
         time_s = time.time()
@@ -70,7 +77,7 @@ if web.stream.isOpened():
         print(len(image))
         print(image[0].shape)
         N = 20
-        R = 10
+        R = 20
         _min = 2
         phai = 1
         window = 3
@@ -91,28 +98,42 @@ if web.stream.isOpened():
         # cv2.imshow("gray",gray)
         # gray = np.expand_dims(gray, axis=2)
         # gray = gray.astype(np.int32)
-        fdfg.test(image)
+
+        skin = fdfg.test(image)
+
         img, bin_mask, res_hand, cmax = fdfg.find_hand(image)
+        img_old, bin_mask_old, res_hand_old = fdfg.find_hand_old(image)
         time_find_hand = time.time() - time_s
         print("time_find_hand:", time_find_hand)
-        gray_res_hand = cv2.cvtColor(res_hand, cv2.COLOR_BGR2GRAY)
-        cv2.imshow("gray_res_hand", gray_res_hand)
-        gray_res_hand = np.expand_dims(gray_res_hand, axis=2)
-        gray_res_hand = gray_res_hand.astype(np.int32)
-        # print("gray_hand_image:", gray_hand_image.shape)
-        # imagg = img.astype(np.int32)
-        # gray_hand_image_2 = np.expand_dims(gray_hand_image, axis=2)
-        # print("gray_hand_image:", gray_hand_image_2.shape)
-        # gray_hand2move = gray_hand_image_2.astype(np.int32)
-        # print("imagg.shape: ", img.shape)
+        # gray_res_hand = cv2.cvtColor(res_hand, cv2.COLOR_BGR2GRAY)
+        # cv2.imshow("gray_res_hand", gray_res_hand)
+        # gray_res_hand = np.expand_dims(gray_res_hand, axis=2)
+        # gray_res_hand = gray_res_hand.astype(np.int32)
+
+        ### MOG2 ###################################
+        cv2.imshow("res_hand", res_hand)
+        # cv2.imshow("res_hand_old", res_hand_old)
+        # fgmask_old = fdfg.
+        # fgmask = fgbg.apply(res_hand_old)
+        # fgmask_old = fgbg_old.apply(res_hand_old)
+        # fgmask = cv2.morphologyEx(fgmask, cv2.MORPH_OPEN, kernel)
+        # fgmask_old = cv2.morphologyEx(fgmask, cv2.MORPH_OPEN, kernel)
+        # cv2.imshow("GMG", fgmask)
+        # cv2.imshow("GMG_old", fgmask_old)
+        fgmask2 = fgbg2.apply(res_hand)
+
+        cv2.imshow("MOG2", fgmask2)
+        #### vibe+ ###############################
+        res_hand = res_hand.astype(np.int32)
         if while_cnt == 1:
-            samples = c_func.func1(gray_res_hand, N, window)
+            samples = c_func.func1(res_hand, N, window)
         # # segMap, samples = fv.vibe_detection(gray, samples, _min, N, R)
-        move_obj, samples = c_func.func2(gray_res_hand, samples, _min, N, R, phai, window)
+        move_obj, samples = c_func.func2(res_hand, samples, _min, N, R, phai, window)
         time_chafen = time.time() - time_s
         print("time_chafen:", time_chafen)
         print("move_obj.shape", move_obj.shape)
         move_obj = np.array(move_obj, dtype=np.uint8)
+        move_obj = cv2.morphologyEx(move_obj, cv2.MORPH_OPEN, kernel)
         # kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
         # move_obj = cv2.erode(move_obj, kernel, iterations=3)
         # move_obj = cv2.dilate(move_obj, kernel, iterations=2)
@@ -122,9 +143,13 @@ if web.stream.isOpened():
         # print("samples", samples)
         cv2.namedWindow("move_obj")
         cv2.imshow("move_obj", move_obj)
+        ##########################################
+        # and_move_bin = cv2.bitwise_and(move_obj, bin_mask)
+        # cv2.imshow("and_move_bin",and_move_bin)
+
         fdfg.gravity(img, bin_mask, cmax)
-        cv2.namedWindow("bin_mask")
-        cv2.imshow("bin_mask", bin_mask)
+        # cv2.namedWindow("bin_mask")
+        # cv2.imshow("bin_mask", bin_mask)
         cv2.namedWindow("img")
         cv2.imshow("img", img)
         # show the output image
@@ -133,17 +158,3 @@ if web.stream.isOpened():
             cv2.destroyAllWindows()
             # ipcam.stop()
             break
-
-            # vs.stop()
-            ### acos bug math domain
-            ##Traceback (most recent call last):
-            #   File "/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/video_vibe.py", line 98, in <module>
-            #     fdfg.gravity(img, gray_hand_image, cmax)
-            #   File "/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/find_finger.py", line 134, in gravity
-            #     angel = Curvature(contours, 20)
-            #   File "/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/find_finger.py", line 260, in Curvature
-            #     p_nxt = contours[id + step][0]
-            # IndexError: index 20 is out of bounds for axis 0 with size 14
-            # move_obj.shape (480, 640)
-            # p_pre = contours[id - step][0]v
-            # IndexError: index -20 is out of bounds for axis 0 with size 18

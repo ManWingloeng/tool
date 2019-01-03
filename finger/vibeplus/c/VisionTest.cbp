@@ -27,6 +27,16 @@
 					<DistClean command="/usr/bin/make -j4 -f &quot;/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/vibeplus/c/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/vibeplus/c"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/vibeplus/c/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/vibeplus/c/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/vibeplus/c/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/vibeplus/c/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
 			<Target title="vision_test">
 				<Option output="/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/vibeplus/c/vision_test" prefix_auto="0" extension_auto="0"/>
 				<Option working_dir="/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/vibeplus/c"/>
@@ -77,16 +87,6 @@
 					<DistClean command="/usr/bin/make -j4 -f &quot;/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/vibeplus/c/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
-			<Target title="edit_cache">
-				<Option working_dir="/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/vibeplus/c"/>
-				<Option type="4"/>
-				<MakeCommands>
-					<Build command="/usr/bin/make -j4 -f &quot;/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/vibeplus/c/Makefile&quot;  VERBOSE=1 edit_cache"/>
-					<CompileFile command="/usr/bin/make -j4 -f &quot;/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/vibeplus/c/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j4 -f &quot;/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/vibeplus/c/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j4 -f &quot;/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/vibeplus/c/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
 		</Build>
 		<Unit filename="/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/vibeplus/c/ViBePlus.cpp">
 			<Option target="vision_test"/>
@@ -97,7 +97,7 @@
 		<Unit filename="/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/vibeplus/c/ViBePlusMacro.h">
 			<Option target="vision_test"/>
 		</Unit>
-		<Unit filename="/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/vibeplus/c/main.cpp">
+		<Unit filename="/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/vibeplus/c/skin.cpp">
 			<Option target="vision_test"/>
 		</Unit>
 		<Unit filename="/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/vibeplus/c/CMakeLists.txt">
@@ -109,10 +109,10 @@
 		<Unit filename="/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/vibeplus/c/../../../../../../../../../../usr/local/share/OpenCV/OpenCVConfig.cmake">
 			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\..\usr\local\share\OpenCV\"/>
 		</Unit>
-		<Unit filename="/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/vibeplus/c/../../../../../../../../../../usr/local/share/OpenCV/OpenCVModules-release.cmake">
+		<Unit filename="/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/vibeplus/c/../../../../../../../../../../usr/local/share/OpenCV/OpenCVModules.cmake">
 			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\..\usr\local\share\OpenCV\"/>
 		</Unit>
-		<Unit filename="/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/vibeplus/c/../../../../../../../../../../usr/local/share/OpenCV/OpenCVModules.cmake">
+		<Unit filename="/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/vibeplus/c/../../../../../../../../../../usr/local/share/OpenCV/OpenCVModules-release.cmake">
 			<Option virtualFolder="CMake Files\..\..\..\..\..\..\..\..\..\..\usr\local\share\OpenCV\"/>
 		</Unit>
 	</Project>

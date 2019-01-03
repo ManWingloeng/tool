@@ -1,5 +1,5 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/vision_test.dir/main.cpp.o"
+  "CMakeFiles/vision_test.dir/skin.cpp.o"
   "CMakeFiles/vision_test.dir/ViBePlus.cpp.o"
   "vision_test.pdb"
   "vision_test"

@@ -17,8 +17,10 @@ import imutils
 # frame=cv2.blur(frame,(11,11))
 
 def test(frame):
-    imgSkin = YCbCr_v2.convertYCbCr2(frame)
-    cv2.imshow("imgSkin",imgSkin)
+    imgSkin = YCbCr_v2.detect_ellipse(frame)
+    cv2.imshow("Skin",imgSkin)
+    return imgSkin
+
 
 
 def find_hand(frame):
@@ -27,27 +29,24 @@ def find_hand(frame):
     # frame = cv2.GaussianBlur(frame, (15, 15), 0)
     # frame = cv2.bilateralFilter(frame, 9, 75, 100)
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    YCrCb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2YCrCb)
-    YCrCb_frame = cv2.GaussianBlur(YCrCb_frame, (9, 9), 0)
+    YCrCb_frame = YCbCr_v2.convertYCbCr2(frame)
+    # YCrCb_frame = cv2.GaussianBlur(YCrCb_frame, (9, 9), 0)
     YCrCb_frame = cv2.GaussianBlur(YCrCb_frame, (3, 3), 0)
-    YCrCb_frame = cv2.GaussianBlur(YCrCb_frame, (1, 1), 0)
+    # YCrCb_frame = cv2.GaussianBlur(YCrCb_frame, (1, 1), 0)
     cv2.imshow("YCrCb_frame", YCrCb_frame)
     print(frame.shape[:2])
     # mask = cv2.inRange(YCrCb_frame, np.array([0, 135, 97]), np.array([255, 177, 127]))#140 170 100 120
-    mask = cv2.inRange(YCrCb_frame, np.array([0, 140, 100]), np.array([255, 175, 120]))
-    # skinEllipse = np.zeros(shape=(256, 256))
-    # skinEllipse = skinEllipse.astype(np.int32)
-    # skinEllipse = cv2.ellipse(skinEllipse, (109.38, 152.02), (23.4, 15.2), 43, 0, 360, (255, 255, 255), -1)
+    mask = cv2.inRange(YCrCb_frame, np.array([0, 133, 77]), np.array([255, 173, 127]))
     cv2.imshow("mask", mask)
     # mask = cv2.inRange(YCrCb_frame, np.array([0, 140, 100]), np.array([255, 170, 120]))
     # cv2.imshow("mask", mask)
     res = cv2.bitwise_and(frame, frame, mask=mask)
     # res = cv2.GaussianBlur(res, (15, 15), 0)
     # res = cv2.bilateralFilter(res, 9, 75, 100)
-    res = cv2.dilate(res, (15, 15), iterations=4)
-    res = cv2.erode(res, (15, 15), iterations=3)
-    res = cv2.dilate(res, (15, 15), iterations=1)
-
+    res = cv2.dilate(res, (9, 9), iterations=1)
+    res = cv2.erode(res, (9, 9), iterations=3)
+    res = cv2.dilate(res, (9, 9), iterations=2)
+    cv2.imshow("res",res)
     # res = cv2.GaussianBlur(res, (15, 15), 0)
     #     cv2.imshow("res", res)
     ret, bin_mask = cv2.threshold(mask, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
@@ -112,6 +111,64 @@ def find_hand(frame):
     else:
         cmax=[]
     return img, bin_mask, res, cmax
+
+
+def find_hand_old(frame):
+    # frame = imutils.resize(frame, width=500, height=500)
+    img = frame.copy()
+    # frame = cv2.GaussianBlur(frame, (15, 15), 0)
+    # frame = cv2.bilateralFilter(frame, 9, 75, 100)
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    YCrCb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2YCrCb)
+    # YCrCb_frame = cv2.GaussianBlur(YCrCb_frame, (9, 9), 0)
+    YCrCb_frame = cv2.GaussianBlur(YCrCb_frame, (3, 3), 0)
+    # YCrCb_frame = cv2.GaussianBlur(YCrCb_frame, (1, 1), 0)
+    cv2.imshow("YCrCb_frame_old", YCrCb_frame)
+    print(frame.shape[:2])
+    # mask = cv2.inRange(YCrCb_frame, np.array([0, 135, 97]), np.array([255, 177, 127]))#140 170 100 120
+    mask = cv2.inRange(YCrCb_frame, np.array([0, 133, 77]), np.array([255, 173, 127]))
+    cv2.imshow("mask_old", mask)
+    # mask = cv2.inRange(YCrCb_frame, np.array([0, 140, 100]), np.array([255, 170, 120]))
+    # cv2.imshow("mask", mask)
+    res = cv2.bitwise_and(frame, frame, mask=mask)
+    # res = cv2.GaussianBlur(res, (15, 15), 0)
+    # res = cv2.bilateralFilter(res, 9, 75, 100)
+    res = cv2.dilate(res, (9, 9), iterations=1)
+    res = cv2.erode(res, (9, 9), iterations=3)
+    res = cv2.dilate(res, (9, 9), iterations=2)
+    cv2.imshow("res_old",res)
+    # res = cv2.GaussianBlur(res, (15, 15), 0)
+    #     cv2.imshow("res", res)
+    ret, bin_mask = cv2.threshold(mask, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    # ret, bin_mask = cv2.threshold(mask, 0, 255, cv2.THRESH_BINARY)
+    # init_mask = bin_mask.copy()
+    # cv2.imshow("init_mask", init_mask)
+
+    # mask_frame=frame[:,:,1:]
+    # mask=np.ones(shape=mask_frame.shape)
+    # msk_lower=np.array([136, 100]) #140,100 136
+    # msk_upper=np.array([175, 120]) #175,120
+    # print("mask: ",mask.shape)
+    # print("mask_frame: ",mask_                    frame.shape)
+    # np.putmask(mask, mask_frame<msk_lower, 0.)
+    # np.putmask(mask, mask_frame>msk_upper, 0.)
+
+    # mask=mask[:,:,0]*mask[:,:,1]
+    # print(mask.shape)
+
+    # kernelf = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (10, 10))
+    # mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernelf, iterations=1)
+    # mask = cv2.dilate(mask, kernelf, iterations=1)
+    # mask = cv2.erode(mask, kernelf, iterations=1)
+
+
+
+    bin_mask = cv2.morphologyEx(bin_mask, cv2.MORPH_CLOSE, (11, 11))
+    watershed_mask = bin_mask.copy()
+    bin_mask = cv2.dilate(bin_mask, (15, 15), iterations=4)
+    bin_mask = cv2.erode(bin_mask, (15, 15), iterations=2)
+
+    return img, bin_mask, res
 
 
 def gravity(image, gray, contours):
@@ -295,13 +352,13 @@ def derived_gravity(image, gray, contours):
 
 def Curvature(contours, step):
     L_of_contours = len(contours)
-    print("L_of_contours",L_of_contours)
+    # print("L_of_contours",L_of_contours)
     angel = [-1] * L_of_contours
     if L_of_contours < step or L_of_contours <= 0:
         return -1
     for id, point in enumerate(contours):
-        print("id+step:",id+step)
-        print("id - step",id - step)
+        # print("id+step:",id+step)
+        # print("id - step",id - step)
         p = point[0]
         if id < step and id + step < L_of_contours:
             p_pre = contours[L_of_contours - step][0]
@@ -322,7 +379,7 @@ def Curvature(contours, step):
         angel[id] = cos_p
     # for i, a in enumerate(angel[:step]):
     #     angel[i] = angel[step]
-    print(angel)
+    # print(angel)
     return angel
     # print("angel:", angel)
     # if -20 < angel < 20:

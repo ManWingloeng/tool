@@ -5,7 +5,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
   "/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/vibeplus/c/ViBePlus.cpp" "/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/vibeplus/c/CMakeFiles/vision_test.dir/ViBePlus.cpp.o"
-  "/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/vibeplus/c/main.cpp" "/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/vibeplus/c/CMakeFiles/vision_test.dir/main.cpp.o"
+  "/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/vibeplus/c/skin.cpp" "/media/todd/38714CA0C89E958E/147/yl_tmp/readingbook/pipeline/finger/vibeplus/c/CMakeFiles/vision_test.dir/skin.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 
