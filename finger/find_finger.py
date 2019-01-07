@@ -17,11 +17,31 @@ import imutils
 # frame=cv2.blur(frame,(11,11))
 
 def test(frame):
-    imgSkin = YCbCr_v2.detect_ellipse(frame)
-    cv2.imshow("Skin",imgSkin)
-    return imgSkin
+    YCrCb_frame = cv2.GaussianBlur(frame, (3, 3), 0)
+    (Y,Cr,Cb) = cv2.split(YCrCb_frame)
+    YH = cv2.equalizeHist(Y)
+    CrH = cv2.equalizeHist(Cr)
+    CbH = cv2.equalizeHist(Cb)
+    YCrCb_H = cv2.merge((YH,CrH,CbH))
+    img_bin = YCbCr_v2.detect_ellipse(YCrCb_H)
+    # kernelf = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
+    # img_bin = cv2.morphologyEx(img_bin, cv2.MORPH_OPEN, kernelf, iterations=1)
+    img_bin = cv2.dilate(img_bin,(3,3),iterations=3)
+    img_bin = cv2.erode(img_bin,(3,3),iterations=3)
+    cv2.imshow("img_bin", img_bin)
+    return img_bin
 
-
+def test_HSV(frame):
+    HSV_frame = cv2.cvtColor(frame,cv2.COLOR_BGR2HSV)
+    (H,S,V) = cv2.split(HSV_frame)
+    HH = cv2.equalizeHist(H)
+    SH = cv2.equalizeHist(S)
+    VH = cv2.equalizeHist(V)
+    HSV_H = cv2.merge((HH,SH,VH))
+    ret1, SH = cv2.threshold(SH,0,255,type=cv2.THRESH_OTSU)
+    ret2, VH = cv2.threshold(VH,0,255,type=cv2.THRESH_OTSU)
+    HSV_mask = cv2.bitwise_and(SH,VH)
+    cv2.imshow("HSVbin",HSV_mask)
 
 def find_hand(frame):
     # frame = imutils.resize(frame, width=500, height=500)
@@ -33,11 +53,11 @@ def find_hand(frame):
     # YCrCb_frame = cv2.GaussianBlur(YCrCb_frame, (9, 9), 0)
     YCrCb_frame = cv2.GaussianBlur(YCrCb_frame, (3, 3), 0)
     # YCrCb_frame = cv2.GaussianBlur(YCrCb_frame, (1, 1), 0)
-    cv2.imshow("YCrCb_frame", YCrCb_frame)
+    # cv2.imshow("YCrCb_frame", YCrCb_frame)
     print(frame.shape[:2])
     # mask = cv2.inRange(YCrCb_frame, np.array([0, 135, 97]), np.array([255, 177, 127]))#140 170 100 120
     mask = cv2.inRange(YCrCb_frame, np.array([0, 133, 77]), np.array([255, 173, 127]))
-    cv2.imshow("mask", mask)
+    # cv2.imshow("mask", mask)
     # mask = cv2.inRange(YCrCb_frame, np.array([0, 140, 100]), np.array([255, 170, 120]))
     # cv2.imshow("mask", mask)
     res = cv2.bitwise_and(frame, frame, mask=mask)
@@ -46,7 +66,7 @@ def find_hand(frame):
     res = cv2.dilate(res, (9, 9), iterations=1)
     res = cv2.erode(res, (9, 9), iterations=3)
     res = cv2.dilate(res, (9, 9), iterations=2)
-    cv2.imshow("res",res)
+    # cv2.imshow("res",res)
     # res = cv2.GaussianBlur(res, (15, 15), 0)
     #     cv2.imshow("res", res)
     ret, bin_mask = cv2.threshold(mask, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
@@ -123,11 +143,11 @@ def find_hand_old(frame):
     # YCrCb_frame = cv2.GaussianBlur(YCrCb_frame, (9, 9), 0)
     YCrCb_frame = cv2.GaussianBlur(YCrCb_frame, (3, 3), 0)
     # YCrCb_frame = cv2.GaussianBlur(YCrCb_frame, (1, 1), 0)
-    cv2.imshow("YCrCb_frame_old", YCrCb_frame)
+    # cv2.imshow("YCrCb_frame_old", YCrCb_frame)
     print(frame.shape[:2])
     # mask = cv2.inRange(YCrCb_frame, np.array([0, 135, 97]), np.array([255, 177, 127]))#140 170 100 120
     mask = cv2.inRange(YCrCb_frame, np.array([0, 133, 77]), np.array([255, 173, 127]))
-    cv2.imshow("mask_old", mask)
+    # cv2.imshow("mask_old", mask)
     # mask = cv2.inRange(YCrCb_frame, np.array([0, 140, 100]), np.array([255, 170, 120]))
     # cv2.imshow("mask", mask)
     res = cv2.bitwise_and(frame, frame, mask=mask)

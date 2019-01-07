@@ -100,7 +100,7 @@ if web.stream.isOpened():
         # gray = gray.astype(np.int32)
 
         skin = fdfg.test(image)
-
+        hsv_skin = fdfg.test_HSV(image)
         img, bin_mask, res_hand, cmax = fdfg.find_hand(image)
         img_old, bin_mask_old, res_hand_old = fdfg.find_hand_old(image)
         time_find_hand = time.time() - time_s

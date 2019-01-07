@@ -296,13 +296,31 @@ def detect_ellipse(frame):
     imgYcc_copy = imgYcc.copy()
     Cx, Cy = 109.38, 152.02
     ecx, ecy = 1.60, 2.41
+
     a, b = 25.39, 14.03
     Theta = 2.53 / np.pi * 180
     cv2.imshow("copy",imgSkin)
+    img_bin=img.copy()
+    create_ellipse(rows,cols,imgYcc,img_bin, Cx,Cy,ecx,ecy,a,b,Theta)
+    return img_bin
+
+@jit(nogil=True)
+def create_ellipse(rows,cols,imgYcc,img_bin,Cx,Cy,ecx,ecy,a,b,Theta):
+    # SkinCrCb = np.zeros(shape=[256,256],dtype=cv2.CV_8UC1)
+    # SkinCrCb = np.zeros(shape=[256,256],dtype=np.int32)
+    center=(int(ecx),int(ecy))
+    print("center",center)
+    a = int(a)
+    b = int(b)
+    Theta = int(Theta)
+    # skincbcr=np.zeros([256,256],dtype=np.uint8)
+    # cv2.ellipse(skincbcr,center,(a,b),0,0.0,360.0,(255,255,255),-1)
+    # cv2.imshow("ellipse",skincbcr)
     for r in range(rows):
         for c in range(cols):
-            Cb = imgYcc[r][c][2]
             Cr = imgYcc[r][c][1]
+            Cb = imgYcc[r][c][2]
+
             cosTheta = np.cos(Theta)
             sinTehta = np.sin(Theta)
             matrixA = np.array([[cosTheta, sinTehta], [-sinTehta, cosTheta]], dtype=np.double)
@@ -312,9 +330,11 @@ def detect_ellipse(frame):
             x = matrixC[0, 0]
             y = matrixC[1, 0]
             ellipse = (x - ecx) ** 2 / a ** 2 + (y - ecy) ** 2 / b ** 2
-            if ellipse > 1:
-                imgSkin[r][c][0] = 0
-                imgSkin[r][c][1] = 0
-                imgSkin[r][c][2] = 0
-    return imgSkin
+            
+            if ellipse<=1:
+                img_bin[r, c] = [255,255,255]
+            else:
+                img_bin[r, c]=[0,0,0]
+
+
 
